@@ -1,5 +1,7 @@
-import java.io.{BufferedReader, File, FileReader}
+package ca.walberg.advent2022
+
 import scala.io.Source
+
 @main def Day01a(args: String*): Unit = {
     val source = Source.fromFile("data/day1.txt")
     val caloriesPer: Seq[Int] = source.getLines().foldRight(Seq(0))(

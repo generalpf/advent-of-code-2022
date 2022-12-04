@@ -1,7 +1,7 @@
 package ca.walberg.advent2022
 
-import java.io.{BufferedReader, File, FileReader}
 import scala.io.Source
+
 @main def Day02a(args: String*): Unit = {
     val source = Source.fromFile("data/day2.txt")
     val score: Int = source.getLines().foldRight(0)(

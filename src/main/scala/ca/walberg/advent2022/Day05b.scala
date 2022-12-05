@@ -1,6 +1,5 @@
 package ca.walberg.advent2022
 
-import scala.:+
 import scala.io.Source
 
 @main def Day05b(args: String*): Unit = {
@@ -22,8 +21,6 @@ import scala.io.Source
     (acc: Seq[Seq[Char]], line: String) =>
       regex.findFirstMatchIn(line) match
         case Some(m) =>
-          println(line)
-          println(acc)
           val quantity = m.group(1).toInt
           val fromPileIndex = m.group(2).toInt - 1
           val toPileIndex = m.group(3).toInt - 1
@@ -31,6 +28,6 @@ import scala.io.Source
           acc.patch(fromPileIndex, Seq(acc(fromPileIndex).dropRight(quantity)), 1).patch(toPileIndex, Seq(acc(toPileIndex) ++ crates), 1)
         case None => acc // starting configuration line; ignore.
   )
-  println(finalPiles.map(_.lastOption))
+  println(finalPiles.map(_.last))
   source.close()
 }

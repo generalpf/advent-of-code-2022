@@ -4,8 +4,8 @@ import scala.io.Source
 
 @main def Day02b(args: String*): Unit = {
   val source = Source.fromFile("data/day2.txt")
-  val score: Int = source.getLines().foldRight(0)(
-    (line: String, acc: Int) =>
+  val score: Int = source.getLines().foldLeft(0)(
+    (acc: Int, line: String) =>
       acc + (line match
         case "A X" => 0 + 3
         case "A Y" => 3 + 1

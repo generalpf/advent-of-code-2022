@@ -4,9 +4,9 @@ import scala.io.Source
 
 @main def Day07a(args: String*): Unit = {
 
-  class File(var name: String, var size: Long)
+  class File(val name: String, val size: Long)
 
-  class Directory(var name: String, var files: Seq[File], var subdirectories: Seq[Directory], var parent: Option[Directory], var size: Option[Long])
+  class Directory(val name: String, var files: Seq[File], var subdirectories: Seq[Directory], val parent: Option[Directory], var size: Option[Long])
 
   val rootDirectory = Directory("/", Seq(), Seq(), None, None)
   var currentDirectory: Directory = rootDirectory
@@ -43,6 +43,7 @@ import scala.io.Source
 
   traverse(rootDirectory)
 
+  // needn't worry about rootDirectory matching or not, there's no way it's a candidate to be deleted.
   val totalSize = matchingDirectories.map(_.size.head).sum
   println(s"total size of small directories: $totalSize")
   source.close()

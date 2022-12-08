@@ -15,33 +15,19 @@ import scala.io.Source
   do
     val treeHeight = forest(y)(x)
     // from the west, then east, then north, then south
-    // this is ugly, I'd like to use takeUntil() but Scala doesn't have it.
-    var blockingTrees = 0
-    val west = (x - 1 until -1 by -1).takeWhile(x1 =>
-      if (forest(y)(x1) >= treeHeight)
-        blockingTrees += 1
-      forest(y)(x1) < treeHeight
-    ).length + blockingTrees
-    blockingTrees = 0
-    val east = (x + 1 until forest(0).length).takeWhile(x1 =>
-      if (forest(y)(x1) >= treeHeight)
-        blockingTrees += 1
-      forest(y)(x1) < treeHeight
-    ).length + blockingTrees
-    blockingTrees = 0
-    val north = (y - 1 until -1 by -1).takeWhile(y1 =>
-      if (forest(y1)(x) >= treeHeight)
-        blockingTrees += 1
-      forest(y1)(x) < treeHeight
-    ).length + blockingTrees
-    blockingTrees = 0
-    val south = (y + 1 until forest.length).takeWhile(y1 =>
-      if (forest(y1)(x) >= treeHeight)
-        blockingTrees += 1
-      forest(y1)(x) < treeHeight
-    ).length + blockingTrees
-    val visibleTrees = west * east * north * south
-    bestScore = Math.max(bestScore, visibleTrees)
+    val west = ((x - 1 until -1 by -1).span(x1 => forest(y)(x1) < treeHeight) match {
+      case (head, tail) => head :++ tail.take(1)
+    }).length
+    val east = ((x + 1 until forest(0).length).span(x1 => forest(y)(x1) < treeHeight) match {
+      case (head, tail) => head :++ tail.take(1)
+    }).length
+    val north = ((y - 1 until -1 by -1).span(y1 => forest(y1)(x) < treeHeight) match {
+      case (head, tail) => head :++ tail.take(1)
+    }).length
+    val south = ((y + 1 until forest.length).span(y1 => forest(y1)(x) < treeHeight) match {
+      case (head, tail) => head :++ tail.take(1)
+    }).length
+    bestScore = Math.max(bestScore, west * east * north * south)
 
   println(s"the best score is $bestScore")
   source.close()

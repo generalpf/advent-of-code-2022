@@ -1,6 +1,5 @@
 package ca.walberg.advent2022
 
-import scala.:+
 import scala.io.Source
 
 @main def Day15a(args: String*): Unit = {

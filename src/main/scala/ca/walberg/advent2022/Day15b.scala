@@ -1,9 +1,5 @@
 package ca.walberg.advent2022
 
-import java.util.concurrent.Executors
-import scala.:+
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
 import scala.io.Source
 
 @main def Day15b(args: String*): Unit = {
@@ -18,38 +14,28 @@ import scala.io.Source
           acc :+ ((m.group(1).toInt, m.group(2).toInt), (m.group(3).toInt, m.group(4).toInt))
   )
 
-  implicit val context: ExecutionContextExecutor = ExecutionContext.fromExecutor(Executors.newWorkStealingPool())
-
   val dimension = 4000000
-  val threads = Runtime.getRuntime.availableProcessors
-  val slice = dimension / threads
 
-  val futures = (0 until threads).map(i =>
-    Future {
-      (i * slice until (i + 1) * slice + 1).indexWhere(y =>
-        var x = 0
-        var found = false
-        while (!found && x <= dimension) {
-          // find first sensor that we're within matching beacon range of.
-          val inRangeOf = sensorsAndBeacons.indexWhere((sensor, beacon) =>
-            // is the distance from sensor -> beacon greater than or equal to the distance from sensor -> (x, y)?
-            manhattanDistance(sensor._1, sensor._2, beacon._1, beacon._2) >= manhattanDistance(sensor._1, sensor._2, x, y)
-          )
-          if (inRangeOf == -1) {
-            println(s"($x, $y) => ${BigInt(x) * 4000000 + y}")
-            found = true
-          } else {
-            val sensorAndBeacon = sensorsAndBeacons(inRangeOf)
-            val distanceFromSensorToBeacon = manhattanDistance(sensorAndBeacon._1._1, sensorAndBeacon._1._2, sensorAndBeacon._2._1, sensorAndBeacon._2._2)
-            x = sensorAndBeacon._1._1 + (distanceFromSensorToBeacon - Math.abs(sensorAndBeacon._1._2 - y)) + 1
-          }
-        }
-        found
+  (0 until dimension + 1).indexWhere(y =>
+    var x = 0
+    var found = false
+    while (!found && x <= dimension) {
+      // find first sensor that we're within matching beacon range of.
+      val inRangeOf = sensorsAndBeacons.indexWhere((sensor, beacon) =>
+        // is the distance from sensor -> beacon greater than or equal to the distance from sensor -> (x, y)?
+        manhattanDistance(sensor._1, sensor._2, beacon._1, beacon._2) >= manhattanDistance(sensor._1, sensor._2, x, y)
       )
+      if (inRangeOf == -1) {
+        println(s"($x, $y) => ${BigInt(x) * 4000000 + y}")
+        found = true
+      } else {
+        val sensorAndBeacon = sensorsAndBeacons(inRangeOf)
+        val distanceFromSensorToBeacon = manhattanDistance(sensorAndBeacon._1._1, sensorAndBeacon._1._2, sensorAndBeacon._2._1, sensorAndBeacon._2._2)
+        x = sensorAndBeacon._1._1 + (distanceFromSensorToBeacon - Math.abs(sensorAndBeacon._1._2 - y)) + 1
+      }
     }
+    found
   )
-
-  futures.foreach(f => Await.ready(f, Duration.Inf))
 
   source.close()
 }

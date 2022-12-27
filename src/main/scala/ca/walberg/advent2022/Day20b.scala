@@ -13,21 +13,21 @@ import scala.io.Source
   source.close()
 
   def mix(numbers: Seq[Wlint], times: Int): Seq[Wlint] =
-    var newNumbers = numbers
-    (0 until times).foreach(_ =>
-      numbers.foreach(n =>
-        n.l % (numbers.length - 1) match
-          case 0 =>
-          case _ =>
-            val oldIndex = newNumbers.indexWhere(_ eq n)
-            newNumbers = newNumbers.patch(oldIndex, Seq(), 1)
-            val newIndex = (oldIndex + n.l) % newNumbers.length match
-              case i if i < 0 => i + newNumbers.length
-              case i => i
-            newNumbers = newNumbers.take(newIndex.toInt) ++ Seq(n) ++ newNumbers.takeRight(newNumbers.length - newIndex.toInt)
-      )
+    (0 until times).foldLeft(numbers)(
+      (acc: Seq[Wlint], _: Int) =>
+        numbers.foldLeft(acc)(
+          (acc: Seq[Wlint], n: Wlint) =>
+            n.l % (numbers.length - 1) match
+              case 0 => acc
+              case _ =>
+                val oldIndex = acc.indexWhere(_ eq n)
+                val newAcc = acc.patch(oldIndex, Seq(), 1)
+                val newIndex = (oldIndex + n.l) % newAcc.length match
+                  case i if i < 0 => i + newAcc.length
+                  case i => i
+                newAcc.take(newIndex.toInt) ++ Seq(n) ++ newAcc.takeRight(newAcc.length - newIndex.toInt)
+        )
     )
-    newNumbers
 
   def code(numbers: Seq[Wlint]): Long =
     val positionOfZero = numbers.indexWhere(_.l == 0)

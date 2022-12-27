@@ -5,7 +5,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
 import scala.io.Source
 
-@main def Day19a(args: String*): Unit = {
+@main def Day19b(args: String*): Unit = {
   class Blueprint(val id: Int, val orePerOreRobot: Int, val orePerClayRobot: Int, val orePerObsidianRobot: Int, val clayPerObsidianRobot: Int, val orePerGeodeRobot: Int, val obsidianPerGeodeRobot: Int)
 
   val source = Source.fromFile("data/day19.txt")
@@ -16,6 +16,7 @@ import scala.io.Source
         case Some(m) =>
           acc :+ Blueprint(m.group(1).toInt, m.group(2).toInt, m.group(3).toInt, m.group(4).toInt, m.group(5).toInt, m.group(6).toInt, m.group(7).toInt)
   )
+    .take(3)
   source.close()
 
   def geodeMined(b: Blueprint, minutesLeft: Int)(ore: Int, clay: Int, obsidian: Int, geodes: Int)(oreRobots: Int, clayRobots: Int, obsidianRobots: Int, geodeRobots: Int): Int =
@@ -42,13 +43,13 @@ import scala.io.Source
 
   val futures = blueprints.map { b =>
     Future {
-      val mined = geodeMined(b, 24)(0, 0, 0, 0)(1, 0, 0, 0)
+      val mined = geodeMined(b, 32)(0, 0, 0, 0)(1, 0, 0, 0)
       println(s"blueprint ${b.id} mined $mined geode")
-      mined * b.id
+      mined
     }
   }
 
   val qualityLevels = futures.map(f => Await.result(f, Duration.Inf))
 
-  println(s"quality levels = $qualityLevels, sum = ${qualityLevels.sum}")
+  println(s"quality levels = $qualityLevels, product = ${qualityLevels.product}")
 }
